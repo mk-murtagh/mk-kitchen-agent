@@ -118,6 +118,7 @@ public class RecipeService {
                     totalIngredients == 0
                             ? 0.0
                             : (totalScore / totalIngredients) * 100;
+            matchPercentage = Math.round(matchPercentage * 10.0) / 10.0;
 
             matches.add(
                     new RecipeMatch(
@@ -129,7 +130,12 @@ public class RecipeService {
                     )
             );
         }
-
+        matches.sort(
+                (a, b) -> Double.compare(
+                        b.getMatchPercentage(),
+                        a.getMatchPercentage()
+                )
+        );
         return matches;
     }
 
