@@ -3,6 +3,7 @@ package com.marykatekitchen.mykitchen_agent.service;
 import com.marykatekitchen.mykitchen_agent.dto.GroceryItem;
 import com.marykatekitchen.mykitchen_agent.dto.GroceryListResponse;
 import com.marykatekitchen.mykitchen_agent.dto.RecipeMatch;
+import com.marykatekitchen.mykitchen_agent.dto.RecipeRecommendation;
 import com.marykatekitchen.mykitchen_agent.model.Ingredient;
 import com.marykatekitchen.mykitchen_agent.model.Recipe;
 import com.marykatekitchen.mykitchen_agent.model.RecipeIngredient;
@@ -10,6 +11,7 @@ import com.marykatekitchen.mykitchen_agent.repository.IngredientRepository;
 import com.marykatekitchen.mykitchen_agent.repository.RecipeRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,13 +53,7 @@ public class RecipeService {
         recipe.setServings(updatedRecipe.getServings());
         recipe.setInstructions(updatedRecipe.getInstructions());
 
-        if (updatedRecipe.getIngredients() != null) {
-            updatedRecipe.getIngredients().forEach(
-                    ingredient -> ingredient.setRecipe(recipe)
-            );
-        }
-
-        recipe.setIngredients(updatedRecipe.getIngredients());
+        recipe.replaceIngredients(updatedRecipe.getIngredients());
 
         return recipeRepository.save(recipe);
     }
@@ -183,5 +179,102 @@ public class RecipeService {
                 recipe.getName(),
                 missingItems
         );
+    }
+
+    public List<RecipeRecommendation> getRecipeRecommendations(int days) {
+
+        List<Recipe> recipes = recipeRepository.findAll();
+        List<Ingredient> pantry = ingredientRepository.findAll();
+
+        LocalDate today = LocalDate.now();
+        LocalDate expirationCutoff = today.plusDays(days);
+
+        List<RecipeRecommendation> recommendations = new ArrayList<>();
+
+        for (Recipe recipe : recipes) {
+
+            double totalScore = 0.0;
+
+            List<String> missingIngredients = new ArrayList<>();
+            List<String> expiringIngredients = new ArrayList<>();
+
+            for (RecipeIngredient recipeIngredient : recipe.getIngredients()) {
+
+                Ingredient pantryIngredient = pantry.stream()
+                        .filter(ingredient ->
+                                ingredient.getName()
+                                        .equalsIgnoreCase(recipeIngredient.getName())
+                        )
+                        .filter(ingredient ->
+                                ingredient.getUnit()
+                                        .equalsIgnoreCase(recipeIngredient.getUnit())
+                        )
+                        .findFirst()
+                        .orElse(null);
+
+                double requiredQuantity = recipeIngredient.getQuantity();
+
+                double availableQuantity =
+                        pantryIngredient == null
+                                ? 0.0
+                                : pantryIngredient.getQuantity();
+
+                double ingredientScore =
+                        Math.min(
+                                availableQuantity / requiredQuantity,
+                                1.0
+                        );
+
+                totalScore += ingredientScore;
+
+                if (availableQuantity < requiredQuantity) {
+                    missingIngredients.add(recipeIngredient.getName());
+                }
+
+                if (pantryIngredient != null
+                        && pantryIngredient.getExpirationDate() != null
+                        && !pantryIngredient.getExpirationDate().isBefore(today)
+                        && !pantryIngredient.getExpirationDate().isAfter(expirationCutoff)) {
+
+                    expiringIngredients.add(recipeIngredient.getName());
+                }
+            }
+
+            int totalIngredients = recipe.getIngredients().size();
+
+            double matchPercentage =
+                    totalIngredients == 0
+                            ? 0.0
+                            : (totalScore / totalIngredients) * 100;
+
+            matchPercentage =
+                    Math.round(matchPercentage * 10.0) / 10.0;
+
+            double expirationBonus =
+                    expiringIngredients.size() * 10.0;
+
+            double recommendationScore =
+                    matchPercentage + expirationBonus;
+
+            recommendations.add(
+                    new RecipeRecommendation(
+                            recipe.getId(),
+                            recipe.getName(),
+                            matchPercentage,
+                            recommendationScore,
+                            expiringIngredients,
+                            missingIngredients
+                    )
+            );
+        }
+
+        recommendations.sort(
+                (a, b) -> Double.compare(
+                        b.getRecommendationScore(),
+                        a.getRecommendationScore()
+                )
+        );
+
+        return recommendations;
     }
 }
