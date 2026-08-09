@@ -3,6 +3,7 @@ package com.marykatekitchen.mykitchen_agent.service;
 import com.marykatekitchen.mykitchen_agent.model.Ingredient;
 import com.marykatekitchen.mykitchen_agent.repository.IngredientRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -38,5 +39,16 @@ public class IngredientService {
 
     public void deleteIngredient(Long id) {
         ingredientRepository.deleteById(id);
+    }
+
+    public List<Ingredient> getExpiringIngredients(int days) {
+        LocalDate today = LocalDate.now();
+        LocalDate endDate = today.plusDays(days);
+
+        return ingredientRepository
+            .findByExpirationDateBetweenOrderByExpirationDateAsc(
+                    today,
+                    endDate
+            );
     }
 }

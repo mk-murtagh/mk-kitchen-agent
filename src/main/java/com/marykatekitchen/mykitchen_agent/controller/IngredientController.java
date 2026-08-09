@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.marykatekitchen.mykitchen_agent.model.Ingredient;
@@ -28,6 +29,13 @@ public class IngredientController {
         return ingredientService.getAllIngredients();
     }
 
+    @GetMapping("/expiring")
+    public List<Ingredient> getExpiringIngredients(
+            @RequestParam(defaultValue = "7") int days) {
+
+        return ingredientService.getExpiringIngredients(days);
+    }
+
     @PostMapping
     public Ingredient addIngredient(@RequestBody Ingredient ingredient) {
         return ingredientService.addIngredient(ingredient);
@@ -42,4 +50,6 @@ public class IngredientController {
     public void deleteIngredient(@PathVariable Long id) {
         ingredientService.deleteIngredient(id);
     }
+
+    
 }
