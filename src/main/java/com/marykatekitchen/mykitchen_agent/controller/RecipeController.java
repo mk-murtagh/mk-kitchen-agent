@@ -2,6 +2,7 @@ package com.marykatekitchen.mykitchen_agent.controller;
 
 import com.marykatekitchen.mykitchen_agent.dto.GroceryListResponse;
 import com.marykatekitchen.mykitchen_agent.dto.RecipeMatch;
+import com.marykatekitchen.mykitchen_agent.dto.RecipeRecommendation;
 import com.marykatekitchen.mykitchen_agent.model.Recipe;
 import com.marykatekitchen.mykitchen_agent.service.RecipeService;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,13 @@ public class RecipeController {
     @GetMapping("/{id}/grocery-list")
     public GroceryListResponse getGroceryList(@PathVariable Long id) {
         return recipeService.getGroceryList(id);
+    }
+
+    @GetMapping("/recommendations")
+    public List<RecipeRecommendation> getRecipeRecommendations(
+            @RequestParam(defaultValue = "7") int days) {
+
+        return recipeService.getRecipeRecommendations(days);
     }
 
     @PostMapping

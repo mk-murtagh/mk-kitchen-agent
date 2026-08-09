@@ -23,7 +23,7 @@ public class Recipe {
 
     private Integer servings;
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true )
     private List<RecipeIngredient> ingredients = new ArrayList<>();
 
     @Column(length = 5000)
@@ -116,6 +116,18 @@ public class Recipe {
         if (ingredients != null) {
             for (RecipeIngredient ingredient : ingredients) {
                 ingredient.setRecipe(this);
+            }
+        }
+    }
+
+    public void replaceIngredients(List<RecipeIngredient> newIngredients) {
+
+        ingredients.clear();
+
+        if (newIngredients != null) {
+            for (RecipeIngredient ingredient : newIngredients) {
+                ingredient.setRecipe(this);
+                ingredients.add(ingredient);
             }
         }
     }
