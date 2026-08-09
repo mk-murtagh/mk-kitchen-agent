@@ -59,8 +59,14 @@ public class RecipeController {
         return recipeService.updateRecipe(id, recipe);
     }
 
+    @PostMapping("/{id}/cook")
+    public void cookRecipe(@PathVariable Long id) {
+        recipeService.cookRecipe(id);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteRecipe(@PathVariable Long id) {
         recipeService.deleteRecipe(id);
     }
+
 }
