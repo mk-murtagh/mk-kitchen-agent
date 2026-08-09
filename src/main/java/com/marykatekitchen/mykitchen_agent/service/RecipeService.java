@@ -283,4 +283,39 @@ public class RecipeService {
 
         return recommendations;
     }
+
+    public void cookRecipe(Long recipeId) {
+
+        Recipe recipe = getRecipeById(recipeId);
+        List<Ingredient> pantry = ingredientRepository.findAll();
+
+        for (RecipeIngredient recipeIngredient : recipe.getIngredients()) {
+
+            Ingredient pantryIngredient = pantry.stream()
+                    .filter(ingredient ->
+                            ingredient.getName()
+                                    .equalsIgnoreCase(recipeIngredient.getName())
+                    )
+                    .filter(ingredient ->
+                            ingredient.getUnit()
+                                    .equalsIgnoreCase(recipeIngredient.getUnit())
+                    )
+                    .findFirst()
+                    .orElse(null);
+
+            if (pantryIngredient == null) {
+                continue;
+            }
+
+            double newQuantity =
+                    pantryIngredient.getQuantity()
+                            - recipeIngredient.getQuantity();
+
+            pantryIngredient.setQuantity(
+                    Math.max(newQuantity, 0.0)
+            );
+
+            ingredientRepository.save(pantryIngredient);
+        }
+    }
 }
