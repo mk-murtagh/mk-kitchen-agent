@@ -111,18 +111,23 @@ public class Recipe {
     }
 
     public void setIngredients(List<RecipeIngredient> ingredients) {
-        this.ingredients = ingredients;
+        this.ingredients = new ArrayList<>();
 
         if (ingredients != null) {
             for (RecipeIngredient ingredient : ingredients) {
                 ingredient.setRecipe(this);
+                this.ingredients.add(ingredient);
             }
         }
     }
 
     public void replaceIngredients(List<RecipeIngredient> newIngredients) {
 
-        ingredients.clear();
+        if (ingredients == null) {
+            ingredients = new ArrayList<>();
+        } else {
+            ingredients.clear();
+        }
 
         if (newIngredients != null) {
             for (RecipeIngredient ingredient : newIngredients) {
