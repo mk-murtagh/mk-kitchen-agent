@@ -2,6 +2,7 @@ package com.marykatekitchen.mykitchen_agent.controller;
 
 import java.util.List;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,8 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.marykatekitchen.mykitchen_agent.model.Ingredient;
 import com.marykatekitchen.mykitchen_agent.service.IngredientService;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+
 @RestController
 @RequestMapping("/api/ingredients")
+@Validated
 public class IngredientController {
     private final IngredientService ingredientService;
 
@@ -31,13 +36,16 @@ public class IngredientController {
 
     @GetMapping("/expiring")
     public List<Ingredient> getExpiringIngredients(
-            @RequestParam(defaultValue = "7") int days) {
+            @RequestParam(defaultValue = "7") 
+            @Min(value = 0, message = "days must be 0 or greater")
+            int days) {
 
         return ingredientService.getExpiringIngredients(days);
     }
 
     @PostMapping
-    public Ingredient addIngredient(@RequestBody Ingredient ingredient) {
+    public Ingredient addIngredient(
+        @Valid @RequestBody Ingredient ingredient) {
         return ingredientService.addIngredient(ingredient);
     }
 
@@ -50,6 +58,5 @@ public class IngredientController {
     public void deleteIngredient(@PathVariable Long id) {
         ingredientService.deleteIngredient(id);
     }
-
     
 }

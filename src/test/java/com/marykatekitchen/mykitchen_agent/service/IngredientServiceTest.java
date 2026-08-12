@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,7 +65,7 @@ class IngredientServiceTest {
                         1.0,
                         "cup",
                         "fridge",
-                        LocalDate.of(2026, 8, 10)
+                        LocalDate.of(2026, Month.AUGUST, 10)
                 );
 
         Ingredient updated =
@@ -73,7 +74,7 @@ class IngredientServiceTest {
                         2.0,
                         "cup",
                         "fridge",
-                        LocalDate.of(2026, 8, 12)
+                        LocalDate.of(2026, Month.AUGUST, 12)
                 );
 
         when(ingredientRepository.findById(1L))
@@ -90,7 +91,7 @@ class IngredientServiceTest {
         assertEquals("cup", result.getUnit());
         assertEquals("fridge", result.getLocation());
         assertEquals(
-                LocalDate.of(2026, 8, 12),
+                LocalDate.of(2026, Month.AUGUST, 12),
                 result.getExpirationDate()
         );
 
