@@ -1,6 +1,10 @@
 package com.marykatekitchen.mykitchen_agent.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+
 import java.time.LocalDate;
 
 @Entity
@@ -9,10 +13,19 @@ public class Ingredient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
     private String name;
+
+    @NotNull
+    @PositiveOrZero
     private Double quantity;
+
+    @NotBlank
     private String unit;
+
     private String location;
+    
     private LocalDate expirationDate;
 
     public Ingredient(){
