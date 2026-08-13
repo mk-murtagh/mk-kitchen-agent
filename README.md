@@ -289,6 +289,27 @@ GET /api/recipes/{id}/grocery-list
 
 The grocery list accounts for the quantity of an ingredient currently available when the pantry and recipe use matching units.
 
+
+## Changelog
+
+### Current milestone
+
+- Added pantry management APIs for storing, updating, and removing ingredients
+- Added recipe CRUD APIs for creating and editing recipes
+- Added recipe matching logic based on pantry inventory
+- Added grocery-list generation for missing ingredients
+- Added recipe recommendations based on pantry match and expiration dates
+- Added a cook action that reduces pantry quantities after a recipe is prepared
+- Added an AI chat endpoint for kitchen assistance
+- Added automated service and controller test coverage
+
+### Planned next steps
+
+- frontend interface for pantry and recipe workflows
+- richer AI orchestration and tool-based planning
+- ingredient substitution and normalization features
+- improved recipe discovery and search
+
 ## Running Locally
 
 ### Prerequisites
