@@ -28,6 +28,8 @@ public class Ingredient {
     
     private LocalDate expirationDate;
 
+    private String barcode;
+
     public Ingredient(){
 
     }
@@ -64,6 +66,10 @@ public class Ingredient {
         return expirationDate;
     }
 
+    public String getBarcode() {
+        return barcode;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -85,5 +91,9 @@ public class Ingredient {
     }
     public void setExpirationDate(LocalDate expirationDate) {
         this.expirationDate = expirationDate;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
     }
 }

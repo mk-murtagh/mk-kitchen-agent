@@ -1,3 +1,5 @@
+import BarcodeScanner from "./components/BarcodeScanner";
+
 import { useEffect, useState, type FormEvent } from "react";
 import {
   getIngredients,
@@ -15,6 +17,7 @@ function App() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [loadingPantry, setLoadingPantry] = useState(true);
   const [pantryError, setPantryError] = useState("");
+  const [showAddItem, setShowAddItem] = useState(false);
 
   const [message, setMessage] = useState("");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -93,10 +96,17 @@ function App() {
               <p className="section-label">Inventory</p>
               <h2>Pantry</h2>
             </div>
-
-            <span className="count-badge">
+            <div className='pantry-header-actions'>
+              <span className="count-badge">
               {ingredients.length} items
             </span>
+            <button
+              className="add-item-button"
+              onClick={() => setShowAddItem(true)}
+            >
+              + Add Item
+            </button>
+            </div>
           </div>
 
           {loadingPantry && (
@@ -213,6 +223,34 @@ function App() {
           </form>
         </section>
       </main>
+      {showAddItem && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setShowAddItem(false)}
+        >
+          <div
+            className="add-item-modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="modal-header">
+              <div>
+                <p className="section-label">Inventory</p>
+                <h2>Add an Item</h2>
+              </div>
+
+              <button
+                className="modal-close-button"
+                onClick={() => setShowAddItem(false)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <BarcodeScanner />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
